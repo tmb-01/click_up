@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Data
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "owner_id"})})
 public class Workspace extends AbstractEntity {
 
     @Column(nullable = false)
@@ -21,12 +22,18 @@ public class Workspace extends AbstractEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
-    private User ownerId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private User owner;
 
     @Column(nullable = false)
     private String initialLetter;
 
     @OneToOne
-    private Attachment avatarId;
+    private Attachment avatar;
+
+    @PrePersist
+    @PreUpdate
+    private void setInitialLetter() {
+        this.initialLetter = this.name.substring(0, 1);
+    }
 }
